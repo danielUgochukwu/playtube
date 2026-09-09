@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAuth, useClerk } from "@clerk/nextjs";
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { personalItems, sidebarItems } from "@/app/(home)/_constants";
@@ -8,7 +10,9 @@ import { Separator } from "@/components/ui/separator";
 
 
 export const MainSection = () => {
-    const isAuthenticated = true; // TODO: Change to look at auth state
+    const pathname = usePathname();
+    const { isSignedIn: isAuthenticated } = useAuth();
+    const { openSignIn } = useClerk();
 
     return (
       <>
@@ -19,13 +23,19 @@ export const MainSection = () => {
                 <SidebarMenuItem key={title}>
                   <SidebarMenuButton
                     tooltip={title}
-                    isActive={false} // TODO: Change to look at current pathname
-                    onClick={() => {}} // TODO: Do something on click
+                    isActive={pathname === url}
+                    render={<Link href={url} />}
+                    onClick={(event) => {
+                      if (!isAuthenticated && auth)  {
+                        event.preventDefault();
+                        openSignIn();
+                      }
+                    }}
                   >
-                    <Link href={url} className="flex items-center gap-4">
+                    <span className="flex items-center gap-4">
                       <Icon className="size-6" />
                       <span className="text-sm">{title}</span>
-                    </Link>
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -47,13 +57,19 @@ export const MainSection = () => {
                     <SidebarMenuItem key={title}>
                       <SidebarMenuButton
                         tooltip={title}
-                        isActive={false} // TODO: Change to look at current pathname
-                        onClick={() => {}} // TODO: Do something on click
+                        isActive={pathname === url}
+                        render={<Link href={url} />}
+                        onClick={(event) => {
+                          if (!isAuthenticated && auth) {
+                            event.preventDefault();
+                            openSignIn();
+                          }
+                        }}
                       >
-                        <Link href={url} className="flex items-center gap-4">
+                        <span className="flex items-center gap-4">
                           <Icon className="size-6"/>
                           <span className="text-sm">{title}</span>
-                        </Link>
+                        </span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
